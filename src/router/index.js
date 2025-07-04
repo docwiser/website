@@ -51,6 +51,12 @@ const routes = [
     meta: { title: 'Contact - Susant Swain' }
   },
   {
+    path: '/waitlist/:service',
+    name: 'WaitlistJoin',
+    component: () => import('../views/WaitlistJoinPage.vue'),
+    meta: { title: 'Join Waitlist - Susant Swain' }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('../views/LoginPage.vue'),
@@ -97,6 +103,12 @@ const routes = [
     name: 'AdminContent',
     component: () => import('../views/admin/ContentManagement.vue'),
     meta: { title: 'Content Management - Susant Swain', requiresAuth: true, requiresRole: 'admin' }
+  },
+  {
+    path: '/admin/waitlists',
+    name: 'AdminWaitlists',
+    component: () => import('../views/admin/WaitlistManagement.vue'),
+    meta: { title: 'Waitlist Management - Susant Swain', requiresAuth: true, requiresRole: 'admin' }
   },
   {
     path: '/admin/settings',

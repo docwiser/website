@@ -56,23 +56,128 @@
               aria-label="User menu"
               :aria-expanded="showUserMenu"
             >
-              <UserIcon class="h-5 w-5" />
+              <div class="flex items-center space-x-2">
+                <div class="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center">
+                  <span class="text-white text-sm font-medium">
+                    {{ (authStore.user?.displayName || authStore.user?.email || 'U').charAt(0).toUpperCase() }}
+                  </span>
+                </div>
+                <div class="hidden md:block text-left">
+                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {{ authStore.user?.displayName || 'User' }}
+                  </div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ authStore.userRole }}
+                  </div>
+                </div>
+              </div>
             </button>
             
-            <div v-if="showUserMenu" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+            <div v-if="showUserMenu" class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+              <!-- User Info Header -->
+              <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center space-x-3">
+                  <div class="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center">
+                    <span class="text-white font-medium">
+                      {{ (authStore.user?.displayName || authStore.user?.email || 'U').charAt(0).toUpperCase() }}
+                    </span>
+                  </div>
+                  <div>
+                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {{ authStore.user?.displayName || 'User' }}
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                      {{ authStore.user?.email }}
+                    </div>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 mt-1">
+                      {{ authStore.userRole }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- User Links -->
               <div class="py-1">
                 <router-link 
-                  v-if="authStore.isAdmin"
-                  to="/dashboard"
-                  class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  to="/profile"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   @click="showUserMenu = false"
                 >
+                  <UserIcon class="h-4 w-4 mr-3" />
+                  My Profile
+                </router-link>
+                <router-link 
+                  to="/account"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  @click="showUserMenu = false"
+                >
+                  <CogIcon class="h-4 w-4 mr-3" />
+                  Account Settings
+                </router-link>
+                <router-link 
+                  to="/preferences"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  @click="showUserMenu = false"
+                >
+                  <AdjustmentsHorizontalIcon class="h-4 w-4 mr-3" />
+                  Preferences
+                </router-link>
+              </div>
+
+              <!-- Admin Links -->
+              <div v-if="authStore.isAdmin" class="border-t border-gray-200 dark:border-gray-700">
+                <div class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Admin
+                </div>
+                <router-link 
+                  to="/dashboard"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  @click="showUserMenu = false"
+                >
+                  <ChartBarIcon class="h-4 w-4 mr-3" />
                   Dashboard
                 </router-link>
+                <router-link 
+                  to="/admin/users"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  @click="showUserMenu = false"
+                >
+                  <UsersIcon class="h-4 w-4 mr-3" />
+                  User Management
+                </router-link>
+                <router-link 
+                  to="/admin/content"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  @click="showUserMenu = false"
+                >
+                  <DocumentTextIcon class="h-4 w-4 mr-3" />
+                  Content Management
+                </router-link>
+                <router-link 
+                  to="/admin/waitlist"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  @click="showUserMenu = false"
+                >
+                  <ClipboardDocumentListIcon class="h-4 w-4 mr-3" />
+                  Waitlist Management
+                </router-link>
+                <router-link 
+                  to="/admin/settings"
+                  class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  @click="showUserMenu = false"
+                >
+                  <Cog6ToothIcon class="h-4 w-4 mr-3" />
+                  System Settings
+                </router-link>
+              </div>
+
+              <!-- Sign Out -->
+              <div class="border-t border-gray-200 dark:border-gray-700 py-1">
                 <button 
                   @click="handleLogout"
-                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
+                  <ArrowRightOnRectangleIcon class="h-4 w-4 mr-3" />
                   Sign Out
                 </button>
               </div>
@@ -132,7 +237,19 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { CogIcon, UserIcon, Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { 
+  CogIcon, 
+  UserIcon, 
+  Bars3Icon, 
+  XMarkIcon,
+  ChartBarIcon,
+  UsersIcon,
+  DocumentTextIcon,
+  ClipboardDocumentListIcon,
+  Cog6ToothIcon,
+  AdjustmentsHorizontalIcon,
+  ArrowRightOnRectangleIcon
+} from '@heroicons/vue/24/outline'
 import { useAuthStore } from '../../stores/auth'
 import { useUIStore } from '../../stores/ui'
 import AccessibilityModal from '../ui/AccessibilityModal.vue'
