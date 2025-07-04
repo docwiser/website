@@ -7,20 +7,27 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithRedirect,
-  getRedirectResult
+  getRedirectResult,
+  updateProfile
 } from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '../firebase/config'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const userRole = ref('public')
+  const userPermissions = ref([])
   const loading = ref(true)
   const error = ref('')
 
   const isAuthenticated = computed(() => !!user.value)
   const isAdmin = computed(() => userRole.value === 'admin')
   const isViewer = computed(() => userRole.value === 'viewer')
+  const isEditor = computed(() => userRole.value === 'editor')
+
+  const hasPermission = (permission) => {
+    return userPermissions.value.includes(permission) || isAdmin.value
+  }
 
   const initializeAuth = () => {
     onAuthStateChanged(auth, async (firebaseUser) => {
@@ -30,6 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
       } else {
         user.value = null
         userRole.value = 'public'
+        userPermissions.value = []
       }
       loading.value = false
     })
@@ -39,19 +47,28 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const userDoc = await getDoc(doc(db, 'users', uid))
       if (userDoc.exists()) {
-        userRole.value = userDoc.data().role || 'public'
+        const userData = userDoc.data()
+        userRole.value = userData.role || 'public'
+        userPermissions.value = userData.permissions || []
       } else {
         // Create default user document
-        await setDoc(doc(db, 'users', uid), {
+        const defaultUserData = {
           email: user.value.email,
+          displayName: user.value.displayName || '',
           role: 'public',
-          createdAt: new Date().toISOString()
-        })
+          permissions: [],
+          createdAt: new Date().toISOString(),
+          lastLogin: new Date().toISOString()
+        }
+        
+        await setDoc(doc(db, 'users', uid), defaultUserData)
         userRole.value = 'public'
+        userPermissions.value = []
       }
     } catch (err) {
       console.error('Error fetching user role:', err)
       userRole.value = 'public'
+      userPermissions.value = []
     }
   }
 
@@ -59,7 +76,13 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       error.value = ''
       loading.value = true
-      await signInWithEmailAndPassword(auth, email, password)
+      const result = await signInWithEmailAndPassword(auth, email, password)
+      
+      // Update last login
+      await updateDoc(doc(db, 'users', result.user.uid), {
+        lastLogin: new Date().toISOString()
+      })
+      
       return true
     } catch (err) {
       error.value = err.message
@@ -69,17 +92,25 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const register = async (email, password) => {
+  const register = async (email, password, displayName = '') => {
     try {
       error.value = ''
       loading.value = true
       const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password)
       
+      // Update profile with display name
+      if (displayName) {
+        await updateProfile(newUser, { displayName })
+      }
+      
       // Create user document with default role
       await setDoc(doc(db, 'users', newUser.uid), {
         email: newUser.email,
+        displayName: displayName,
         role: 'public',
-        createdAt: new Date().toISOString()
+        permissions: [],
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
       })
       
       return true
@@ -108,6 +139,29 @@ export const useAuthStore = defineStore('auth', () => {
       await signOut(auth)
       user.value = null
       userRole.value = 'public'
+      userPermissions.value = []
+      return true
+    } catch (err) {
+      error.value = err.message
+      return false
+    }
+  }
+
+  const updateUserProfile = async (profileData) => {
+    try {
+      if (!user.value) return false
+      
+      // Update Firebase Auth profile
+      if (profileData.displayName) {
+        await updateProfile(user.value, { displayName: profileData.displayName })
+      }
+      
+      // Update Firestore document
+      await updateDoc(doc(db, 'users', user.value.uid), {
+        ...profileData,
+        updatedAt: new Date().toISOString()
+      })
+      
       return true
     } catch (err) {
       error.value = err.message
@@ -122,16 +176,20 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     user,
     userRole,
+    userPermissions,
     loading,
     error,
     isAuthenticated,
     isAdmin,
     isViewer,
+    isEditor,
+    hasPermission,
     initializeAuth,
     login,
     register,
     loginWithGoogle,
     logout,
+    updateUserProfile,
     clearError
   }
 })
