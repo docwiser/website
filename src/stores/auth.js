@@ -126,11 +126,49 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       error.value = ''
       const provider = new GoogleAuthProvider()
+      provider.addScope('email')
+      provider.addScope('profile')
+      
+      // Use redirect method instead of popup
       await signInWithRedirect(auth, provider)
       return true
     } catch (err) {
       error.value = err.message
       return false
+    }
+  }
+
+  const handleGoogleRedirectResult = async () => {
+    try {
+      const result = await getRedirectResult(auth)
+      if (result) {
+        const user = result.user
+        
+        // Check if user document exists, create if not
+        const userDoc = await getDoc(doc(db, 'users', user.uid))
+        if (!userDoc.exists()) {
+          await setDoc(doc(db, 'users', user.uid), {
+            email: user.email,
+            displayName: user.displayName || '',
+            role: 'public',
+            permissions: [],
+            createdAt: new Date().toISOString(),
+            lastLogin: new Date().toISOString(),
+            provider: 'google'
+          })
+        } else {
+          // Update last login
+          await updateDoc(doc(db, 'users', user.uid), {
+            lastLogin: new Date().toISOString()
+          })
+        }
+        
+        return result
+      }
+      return null
+    } catch (err) {
+      error.value = err.message
+      throw err
     }
   }
 
@@ -188,6 +226,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     register,
     loginWithGoogle,
+    handleGoogleRedirectResult,
     logout,
     updateUserProfile,
     clearError

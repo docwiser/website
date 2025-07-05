@@ -67,7 +67,7 @@
         </header>
 
         <!-- Article Content -->
-        <div class="prose prose-lg dark:prose-invert max-w-none mb-12" v-html="formattedContent"></div>
+        <div class="prose prose-lg dark:prose-invert max-w-none mb-12" v-html="renderedContent"></div>
 
         <!-- Navigation -->
         <nav class="border-t border-gray-200 dark:border-gray-700 pt-8">
@@ -104,6 +104,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { CalendarIcon } from '@heroicons/vue/24/outline'
+import { marked } from 'marked'
 import { useContentStore } from '../stores/content'
 import { useUIStore } from '../stores/ui'
 import SkipLink from '../components/ui/SkipLink.vue'
@@ -114,19 +115,36 @@ const contentStore = useContentStore()
 const uiStore = useUIStore()
 const loading = ref(true)
 
+// Configure marked options for better security and accessibility
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+  headerIds: true,
+  headerPrefix: 'heading-',
+  sanitize: false, // We trust our own content, but in production you might want to sanitize
+  smartLists: true,
+  smartypants: true
+})
+
 const blog = computed(() => {
   return contentStore.publishedBlogs.find(b => b.id === route.params.id)
 })
 
-const formattedContent = computed(() => {
+const renderedContent = computed(() => {
   if (!blog.value?.content) return ''
   
-  // Simple markdown-like formatting
-  return blog.value.content
-    .replace(/\n/g, '<br>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`(.*?)`/g, '<code>$1</code>')
+  try {
+    // Parse markdown content using marked
+    return marked.parse(blog.value.content)
+  } catch (error) {
+    console.error('Error parsing markdown:', error)
+    // Fallback to simple text formatting if markdown parsing fails
+    return blog.value.content
+      .replace(/\n/g, '<br>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`(.*?)`/g, '<code>$1</code>')
+  }
 })
 
 const formatDate = (timestamp) => {
@@ -141,7 +159,9 @@ const formatDate = (timestamp) => {
 
 const speakContent = () => {
   if (blog.value) {
-    const content = `${blog.value.title}. ${blog.value.content}`
+    // Strip HTML tags for speech synthesis
+    const textContent = blog.value.content.replace(/<[^>]*>/g, '')
+    const content = `${blog.value.title}. ${textContent}`
     uiStore.speak(content)
   }
 }

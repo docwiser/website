@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { pinia } from '../main'
 
 const routes = [
   {
@@ -67,6 +68,12 @@ const routes = [
     name: 'Register',
     component: () => import('../views/RegisterPage.vue'),
     meta: { title: 'Register - Susant Swain', requiresGuest: true }
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: () => import('../views/ForgotPasswordPage.vue'),
+    meta: { title: 'Forgot Password - Susant Swain', requiresGuest: true }
   },
   {
     path: '/profile',
@@ -182,7 +189,8 @@ const extractTitleFromContent = () => {
 }
 
 router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore()
+  // Use the exported Pinia instance to access the store
+  const authStore = useAuthStore(pinia)
   
   // Set page title
   if (to.meta.title) {

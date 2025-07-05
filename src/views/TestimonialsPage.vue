@@ -187,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { useContentStore } from '../stores/content'
 import { useUIStore } from '../stores/ui'
@@ -258,13 +258,6 @@ const focusModal = async () => {
   await nextTick()
   if (modalRef.value) {
     modalRef.value.focus()
-  }
-}
-
-// Watch for modal opening to manage focus
-const handleModalOpen = () => {
-  if (showModal.value) {
-    focusModal()
   }
 }
 
