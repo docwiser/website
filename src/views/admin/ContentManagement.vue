@@ -46,7 +46,7 @@
         <div class="flex justify-between items-center">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Projects</h2>
           <button
-            @click="showAddProject = true"
+            @click="openProjectModal()"
             class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             Add Project
@@ -110,13 +110,13 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
-                      @click="editProject(project)"
+                      @click="openProjectModal(project)"
                       class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 mr-4"
                     >
                       Edit
                     </button>
                     <button
-                      @click="deleteProject(project.id)"
+                      @click="confirmDeleteProject(project)"
                       class="text-error-600 hover:text-error-900 dark:text-error-400 dark:hover:text-error-300"
                     >
                       Delete
@@ -134,7 +134,7 @@
         <div class="flex justify-between items-center">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Blog Posts</h2>
           <button
-            @click="showAddBlog = true"
+            @click="openBlogModal()"
             class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             Add Blog Post
@@ -198,13 +198,13 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
-                      @click="editBlog(blog)"
+                      @click="openBlogModal(blog)"
                       class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 mr-4"
                     >
                       Edit
                     </button>
                     <button
-                      @click="deleteBlog(blog.id)"
+                      @click="confirmDeleteBlog(blog)"
                       class="text-error-600 hover:text-error-900 dark:text-error-400 dark:hover:text-error-300"
                     >
                       Delete
@@ -269,13 +269,13 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
                       v-if="!testimonial.approved"
-                      @click="approveTestimonial(testimonial.id)"
+                      @click="approveTestimonial(testimonial)"
                       class="text-success-600 hover:text-success-900 dark:text-success-400 dark:hover:text-success-300 mr-4"
                     >
                       Approve
                     </button>
                     <button
-                      @click="deleteTestimonial(testimonial.id)"
+                      @click="confirmDeleteTestimonial(testimonial)"
                       class="text-error-600 hover:text-error-900 dark:text-error-400 dark:hover:text-error-300"
                     >
                       Delete
@@ -357,22 +357,72 @@
         </div>
       </div>
     </main>
+
+    <!-- Modals -->
+    <ProjectModal
+      :is-open="showProjectModal"
+      :project="selectedProject"
+      @close="closeProjectModal"
+      @saved="handleProjectSaved"
+    />
+
+    <BlogModal
+      :is-open="showBlogModal"
+      :blog="selectedBlog"
+      @close="closeBlogModal"
+      @saved="handleBlogSaved"
+    />
+
+    <!-- Delete Confirmation Modal -->
+    <AdminModal
+      :is-open="showDeleteModal"
+      :title="`Delete ${deleteItem?.type || 'Item'}`"
+      size="sm"
+      :show-footer="true"
+      save-text="Delete"
+      :loading="deleteLoading"
+      @close="closeDeleteModal"
+      @save="confirmDelete"
+    >
+      <div class="text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-error-100 dark:bg-error-900 mb-4">
+          <ExclamationTriangleIcon class="h-6 w-6 text-error-600 dark:text-error-400" />
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+          Are you sure?
+        </h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          This action cannot be undone. This will permanently delete the {{ deleteItem?.type?.toLowerCase() || 'item' }}
+          <strong v-if="deleteItem?.name">"{{ deleteItem.name }}"</strong>.
+        </p>
+      </div>
+    </AdminModal>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { useContentStore } from '../../stores/content'
 import { useUIStore } from '../../stores/ui'
 import SkipLink from '../../components/ui/SkipLink.vue'
+import AdminModal from '../../components/ui/AdminModal.vue'
+import ProjectModal from '../../components/admin/ProjectModal.vue'
+import BlogModal from '../../components/admin/BlogModal.vue'
 
 const contentStore = useContentStore()
 const uiStore = useUIStore()
 
 const activeTab = ref('projects')
-const showAddProject = ref(false)
-const showAddBlog = ref(false)
-const showAddTimeline = ref(false)
+
+// Modal states
+const showProjectModal = ref(false)
+const showBlogModal = ref(false)
+const showDeleteModal = ref(false)
+const selectedProject = ref(null)
+const selectedBlog = ref(null)
+const deleteItem = ref(null)
+const deleteLoading = ref(false)
 
 const tabs = [
   { id: 'projects', name: 'Projects' },
@@ -396,44 +446,59 @@ const getTabCount = (tabId) => {
   }
 }
 
-const editProject = (project) => {
-  // TODO: Implement edit functionality
-  console.log('Edit project:', project)
+// Project Modal Functions
+const openProjectModal = (project = null) => {
+  selectedProject.value = project
+  showProjectModal.value = true
 }
 
-const deleteProject = async (id) => {
-  if (confirm('Are you sure you want to delete this project?')) {
-    const success = await contentStore.deleteProject(id)
-    if (success) {
-      uiStore.addNotification({
-        type: 'success',
-        title: 'Project Deleted',
-        message: 'The project has been successfully deleted.'
-      })
-    }
+const closeProjectModal = () => {
+  showProjectModal.value = false
+  selectedProject.value = null
+}
+
+const handleProjectSaved = () => {
+  // Modal will close itself and show notification
+}
+
+const confirmDeleteProject = (project) => {
+  deleteItem.value = {
+    type: 'Project',
+    name: project.title,
+    id: project.id,
+    deleteFunction: () => contentStore.deleteProject(project.id)
   }
+  showDeleteModal.value = true
 }
 
-const editBlog = (blog) => {
-  // TODO: Implement edit functionality
-  console.log('Edit blog:', blog)
+// Blog Modal Functions
+const openBlogModal = (blog = null) => {
+  selectedBlog.value = blog
+  showBlogModal.value = true
 }
 
-const deleteBlog = async (id) => {
-  if (confirm('Are you sure you want to delete this blog post?')) {
-    const success = await contentStore.deleteBlog(id)
-    if (success) {
-      uiStore.addNotification({
-        type: 'success',
-        title: 'Blog Post Deleted',
-        message: 'The blog post has been successfully deleted.'
-      })
-    }
+const closeBlogModal = () => {
+  showBlogModal.value = false
+  selectedBlog.value = null
+}
+
+const handleBlogSaved = () => {
+  // Modal will close itself and show notification
+}
+
+const confirmDeleteBlog = (blog) => {
+  deleteItem.value = {
+    type: 'Blog Post',
+    name: blog.title,
+    id: blog.id,
+    deleteFunction: () => contentStore.deleteBlog(blog.id)
   }
+  showDeleteModal.value = true
 }
 
-const approveTestimonial = async (id) => {
-  const success = await contentStore.updateTestimonial(id, { approved: true })
+// Testimonial Functions
+const approveTestimonial = async (testimonial) => {
+  const success = await contentStore.updateTestimonial(testimonial.id, { approved: true })
   if (success) {
     uiStore.addNotification({
       type: 'success',
@@ -443,16 +508,44 @@ const approveTestimonial = async (id) => {
   }
 }
 
-const deleteTestimonial = async (id) => {
-  if (confirm('Are you sure you want to delete this testimonial?')) {
-    const success = await contentStore.deleteTestimonial(id)
+const confirmDeleteTestimonial = (testimonial) => {
+  deleteItem.value = {
+    type: 'Testimonial',
+    name: `${testimonial.name}'s testimonial`,
+    id: testimonial.id,
+    deleteFunction: () => contentStore.deleteTestimonial(testimonial.id)
+  }
+  showDeleteModal.value = true
+}
+
+// Delete Modal Functions
+const closeDeleteModal = () => {
+  showDeleteModal.value = false
+  deleteItem.value = null
+}
+
+const confirmDelete = async () => {
+  if (!deleteItem.value) return
+
+  deleteLoading.value = true
+  try {
+    const success = await deleteItem.value.deleteFunction()
     if (success) {
       uiStore.addNotification({
         type: 'success',
-        title: 'Testimonial Deleted',
-        message: 'The testimonial has been successfully deleted.'
+        title: `${deleteItem.value.type} Deleted`,
+        message: `The ${deleteItem.value.type.toLowerCase()} has been successfully deleted.`
       })
+      closeDeleteModal()
     }
+  } catch (error) {
+    uiStore.addNotification({
+      type: 'error',
+      title: 'Delete Failed',
+      message: `There was an error deleting the ${deleteItem.value.type.toLowerCase()}.`
+    })
+  } finally {
+    deleteLoading.value = false
   }
 }
 

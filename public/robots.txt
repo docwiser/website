@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://susantswain.com/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+
+# Allow important pages
+Allow: /
+Allow: /about
+Allow: /projects
+Allow: /blog
+Allow: /testimonials
+Allow: /contact
+Allow: /accessibility
+
+# Crawl delay (optional)
+Crawl-delay: 1

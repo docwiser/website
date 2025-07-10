@@ -1,5 +1,11 @@
 <template>
   <div class="min-h-screen bg-white dark:bg-gray-900">
+    <SEOHead 
+      title="Susant Swain - Software Engineer & Full-Stack Developer"
+      description="Experienced software engineer specializing in web applications, security systems, cross-platform backends, and server administration. 3+ years of building scalable solutions."
+      keywords="software engineer, full-stack developer, web applications, security systems, backend development, server administration, system integration"
+    />
+    
     <!-- Skip Link -->
     <SkipLink />
 
@@ -10,23 +16,23 @@
           <!-- Hero Content -->
           <div>
             <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
-              <span class="block">नमस्ते! I'm Susant Swain</span>
+              <span class="block">Hello! I'm Susant Swain</span>
               <span class="block text-xl md:text-2xl font-normal text-primary-100 mt-2">
-                WordPress Developer & Accessibility Engineer
+                Software Engineer & System Architect
               </span>
             </h1>
             <p class="text-xl md:text-2xl mb-8 text-primary-100 animate-slide-up">
-              मैं एक passionate WordPress developer हूं जो विशेष रूप से दृष्टिहीन समुदाय के लिए accessible digital experiences बनाता हूं। मेरा mission है technology को सभी के लिए inclusive बनाना।
+              I'm a passionate software engineer with 3+ years of experience building robust web applications, security systems, and scalable backend solutions. I specialize in creating cross-platform compatible systems and managing complex network workflows.
             </p>
             <p class="text-lg mb-8 text-primary-200 animate-slide-up">
-              With deep expertise in modern web technologies and accessibility standards, I help businesses create websites that truly serve everyone - because every person deserves equal access to information and opportunities online.
+              From full-stack web development to server administration and system integration, I deliver comprehensive solutions that drive business growth and operational efficiency.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-start animate-slide-up">
               <router-link
                 to="/contact"
                 class="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600 text-center"
               >
-                Let's Work Together
+                Let's Build Something
               </router-link>
               <router-link
                 to="/projects"
@@ -50,7 +56,7 @@
               <div class="w-80 h-80 rounded-full overflow-hidden border-8 border-white shadow-2xl">
                 <img
                   src="/src/assets/photo.png"
-                  alt="Susant Swain - WordPress Developer and Accessibility Engineer"
+                  alt="Susant Swain - Software Engineer and System Architect"
                   class="w-full h-full object-cover"
                 />
               </div>
@@ -65,59 +71,59 @@
 
     <!-- Main Content -->
     <main id="main-content" class="py-16">
-      <!-- Personal Story Section -->
+      <!-- Expertise Overview -->
       <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <div class="text-center mb-12">
           <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            My Journey & Mission
+            My Technical Expertise
           </h2>
           <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            From a small town in India to creating global impact through accessible technology
+            Comprehensive software engineering skills across the full technology stack
           </p>
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
             <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-              Why Accessibility Matters to Me
+              What I Bring to Your Project
             </h3>
             <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">
-              Growing up in India, I witnessed firsthand how technology barriers can exclude people from opportunities. This experience shaped my passion for creating digital solutions that work for everyone, especially those with visual impairments.
+              With 3+ years of hands-on experience, I've developed expertise across multiple domains of software engineering. From architecting scalable web applications to implementing robust security systems, I deliver solutions that are both technically sound and business-focused.
             </p>
             <p class="text-lg text-gray-700 dark:text-gray-300 mb-4">
-              मेरा मानना है कि technology सिर्फ कुछ लोगों के लिए नहीं, बल्कि सभी के लिए होनी चाहिए। Every website I build follows this principle - ensuring that whether you use a screen reader, keyboard navigation, or any assistive technology, you get the same quality experience.
+              My experience spans full-stack development, DevOps, system administration, and network security. I'm passionate about creating efficient, maintainable code and building systems that can scale with your business needs.
             </p>
             <p class="text-lg text-gray-700 dark:text-gray-300">
-              Today, I'm proud to have helped hundreds of businesses make their digital presence truly inclusive, creating opportunities for millions of users worldwide.
+              Whether you need a complete web application, system integration, or infrastructure optimization, I have the skills and experience to deliver exceptional results.
             </p>
           </div>
           
           <div class="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg p-8 text-white">
-            <h3 class="text-2xl font-bold mb-4">What I Bring to Your Project</h3>
+            <h3 class="text-2xl font-bold mb-4">Core Competencies</h3>
             <ul class="space-y-3">
               <li class="flex items-center">
                 <CheckCircleIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-                <span>WCAG 2.1 AA Compliance - ensuring legal compliance and best practices</span>
+                <span>Full-Stack Web Development (React, Vue.js, Node.js, Python)</span>
               </li>
               <li class="flex items-center">
                 <CheckCircleIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-                <span>Screen Reader Optimization - tested with real users and assistive technologies</span>
+                <span>Security Systems & Network Architecture</span>
               </li>
               <li class="flex items-center">
                 <CheckCircleIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-                <span>Keyboard Navigation - complete functionality without a mouse</span>
+                <span>Cross-Platform Backend Development</span>
               </li>
               <li class="flex items-center">
                 <CheckCircleIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-                <span>Voice Control Support - compatible with voice navigation software</span>
+                <span>Server Administration & DevOps</span>
               </li>
               <li class="flex items-center">
                 <CheckCircleIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-                <span>Performance Optimization - fast loading for all users and devices</span>
+                <span>Database Design & Optimization</span>
               </li>
               <li class="flex items-center">
                 <CheckCircleIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-                <span>Ongoing Support - because accessibility is a journey, not a destination</span>
+                <span>API Development & System Integration</span>
               </li>
             </ul>
           </div>
@@ -132,7 +138,7 @@
               Featured Projects
             </h2>
             <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Real-world solutions that make a difference in people's lives
+              Real-world solutions showcasing my technical expertise and problem-solving abilities
             </p>
           </div>
           
@@ -215,7 +221,7 @@
             How I Can Help Your Business
           </h2>
           <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Comprehensive accessibility solutions that expand your reach and ensure compliance
+            Comprehensive software engineering solutions to accelerate your digital transformation
           </p>
         </div>
         
@@ -249,10 +255,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-12">
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-              Latest Insights & Tips
+              Latest Insights & Tutorials
             </h2>
             <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Practical advice on accessibility, WordPress development, and inclusive design
+              Technical articles on software engineering, system architecture, and development best practices
             </p>
           </div>
           
@@ -294,7 +300,7 @@
           </div>
           
           <div v-else class="text-center py-12">
-            <p class="text-gray-600 dark:text-gray-400">Insightful blog posts coming soon.</p>
+            <p class="text-gray-600 dark:text-gray-400">Technical articles coming soon.</p>
           </div>
           
           <div class="text-center mt-12">
@@ -312,10 +318,10 @@
       <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            What Clients Say About Working With Me
+            What Clients Say About My Work
           </h2>
           <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Real feedback from businesses that have transformed their digital accessibility
+            Real feedback from businesses that have benefited from my technical expertise
           </p>
         </div>
         
@@ -373,10 +379,10 @@
       <section class="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-16">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 class="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Make Your Website Accessible to Everyone?
+            Ready to Build Something Amazing?
           </h2>
           <p class="text-xl mb-8 text-primary-100">
-            Let's discuss how we can expand your reach, ensure compliance, and create better experiences for all your users.
+            Let's discuss your project and how my technical expertise can help you achieve your goals.
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <router-link
@@ -400,10 +406,11 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
-import { CheckCircleIcon, CalendarIcon, CodeBracketIcon, EyeIcon, DevicePhoneMobileIcon, CogIcon, AcademicCapIcon, ChatBubbleLeftRightIcon } from '@heroicons/vue/24/outline'
+import { CheckCircleIcon, CalendarIcon, CodeBracketIcon, ShieldCheckIcon, ServerIcon, CogIcon, DatabaseIcon, CloudIcon } from '@heroicons/vue/24/outline'
 import { useContentStore } from '../stores/content'
 import SkipLink from '../components/ui/SkipLink.vue'
 import LoadingSpinner from '../components/ui/LoadingSpinner.vue'
+import SEOHead from '../components/ui/SEOHead.vue'
 
 const contentStore = useContentStore()
 
@@ -413,40 +420,40 @@ const approvedTestimonials = computed(() => contentStore.approvedTestimonials)
 
 const services = [
   {
-    title: 'WordPress Accessibility Audit',
-    description: 'Comprehensive evaluation of your existing website to identify and fix accessibility barriers.',
-    icon: EyeIcon,
-    features: ['WCAG 2.1 AA compliance check', 'Screen reader testing', 'Keyboard navigation audit', 'Detailed remediation plan']
-  },
-  {
-    title: 'Custom WordPress Development',
-    description: 'Build new accessible WordPress websites from scratch with modern design and functionality.',
+    title: 'Full-Stack Web Development',
+    description: 'Complete web application development using modern frameworks and technologies.',
     icon: CodeBracketIcon,
-    features: ['Responsive design', 'SEO optimization', 'Performance optimization', 'Ongoing maintenance']
+    features: ['React/Vue.js frontends', 'Node.js/Python backends', 'Database integration', 'API development']
   },
   {
-    title: 'Accessibility Training',
-    description: 'Educate your team on accessibility best practices and inclusive design principles.',
-    icon: AcademicCapIcon,
-    features: ['Team workshops', 'Documentation', 'Best practices guide', 'Ongoing support']
+    title: 'Security Systems',
+    description: 'Robust security implementations and vulnerability assessments for your applications.',
+    icon: ShieldCheckIcon,
+    features: ['Security audits', 'Authentication systems', 'Data encryption', 'Penetration testing']
   },
   {
-    title: 'Mobile App Accessibility',
-    description: 'Ensure your mobile applications are accessible across all platforms and devices.',
-    icon: DevicePhoneMobileIcon,
-    features: ['iOS & Android testing', 'Voice control support', 'Touch accessibility', 'Platform compliance']
+    title: 'Backend Architecture',
+    description: 'Scalable backend systems designed for performance and reliability.',
+    icon: ServerIcon,
+    features: ['Microservices architecture', 'API design', 'Performance optimization', 'Load balancing']
   },
   {
-    title: 'Accessibility Consulting',
-    description: 'Strategic guidance on implementing accessibility across your entire digital ecosystem.',
-    icon: ChatBubbleLeftRightIcon,
-    features: ['Strategy development', 'Policy creation', 'Implementation roadmap', 'Compliance guidance']
+    title: 'Database Solutions',
+    description: 'Database design, optimization, and management for optimal performance.',
+    icon: DatabaseIcon,
+    features: ['Database design', 'Query optimization', 'Data migration', 'Backup strategies']
   },
   {
-    title: 'Ongoing Support',
-    description: 'Continuous monitoring and maintenance to ensure your website stays accessible.',
+    title: 'DevOps & Deployment',
+    description: 'Streamlined deployment pipelines and infrastructure management.',
+    icon: CloudIcon,
+    features: ['CI/CD pipelines', 'Container orchestration', 'Cloud deployment', 'Monitoring setup']
+  },
+  {
+    title: 'System Integration',
+    description: 'Seamless integration of different systems and third-party services.',
     icon: CogIcon,
-    features: ['Regular audits', 'Content updates', 'Technical support', 'Performance monitoring']
+    features: ['API integrations', 'Legacy system modernization', 'Data synchronization', 'Workflow automation']
   }
 ]
 

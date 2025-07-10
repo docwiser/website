@@ -14,10 +14,17 @@
           <div class="mt-8">
             <button
               @click="speakContent"
-              class="bg-white text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600 mr-4"
+              :class="[
+                'px-6 py-3 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600 mr-4',
+                uiStore.isSpeaking 
+                  ? 'bg-error-600 text-white hover:bg-error-700' 
+                  : 'bg-white text-primary-600 hover:bg-gray-100'
+              ]"
               :disabled="!uiStore.speechEnabled"
             >
-              <span v-if="uiStore.speechEnabled">🔊 Read Aloud</span>
+              <span v-if="uiStore.speechEnabled">
+                {{ uiStore.isSpeaking ? '⏹️ Stop Reading' : '🔊 Read Aloud' }}
+              </span>
               <span v-else>🔊 Enable Speech in Settings</span>
             </button>
             <a
@@ -234,17 +241,17 @@ const values = [
 
 const speakContent = () => {
   const content = `
-    Hello! I'm Susant Swain, a passionate WordPress developer and software engineer with a mission to make the web more accessible for everyone. 
-    My journey began with a simple belief: technology should serve all people, regardless of their abilities.
+    Hello! I'm Susant Swain, a passionate software engineer with 3+ years of experience building robust applications and systems.
+    My journey began with a simple belief: technology should solve real problems and create meaningful impact.
     
-    Throughout my career, I've specialized in creating digital experiences that are not only beautiful and functional but also fully accessible to users with disabilities. 
-    I have extensive experience working with screen readers, keyboard navigation, and other assistive technologies.
+    Throughout my career, I've specialized in full-stack development, security systems, and scalable backend architecture. 
+    I have extensive experience with modern frameworks, cloud technologies, and system administration.
     
-    My expertise spans modern web technologies including WordPress, React, Vue.js, and accessibility standards like WCAG 2.1 AA. 
-    I believe that accessibility is not just a compliance requirement—it's an opportunity to create better experiences for everyone.
+    My expertise spans web development, security implementation, database optimization, and DevOps practices. 
+    I believe that great software is not just functional—it's secure, scalable, and maintainable.
   `
   
-  uiStore.speak(content)
+  uiStore.toggleSpeaking(content)
 }
 
 onMounted(() => {

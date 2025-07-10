@@ -51,10 +51,17 @@
           <div class="flex space-x-4 mb-8">
             <button
               @click="speakContent"
-              class="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              :class="[
+                'px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                uiStore.isSpeaking 
+                  ? 'bg-error-600 text-white hover:bg-error-700' 
+                  : 'bg-primary-600 text-white hover:bg-primary-700'
+              ]"
               :disabled="!uiStore.speechEnabled"
             >
-              <span v-if="uiStore.speechEnabled">🔊 Read Aloud</span>
+              <span v-if="uiStore.speechEnabled">
+                {{ uiStore.isSpeaking ? '⏹️ Stop Reading' : '🔊 Read Aloud' }}
+              </span>
               <span v-else>🔊 Enable Speech in Settings</span>
             </button>
             <button
@@ -162,7 +169,7 @@ const speakContent = () => {
     // Strip HTML tags for speech synthesis
     const textContent = blog.value.content.replace(/<[^>]*>/g, '')
     const content = `${blog.value.title}. ${textContent}`
-    uiStore.speak(content)
+    uiStore.toggleSpeaking(content)
   }
 }
 

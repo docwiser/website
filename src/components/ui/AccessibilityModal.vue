@@ -186,8 +186,8 @@
                 <span class="text-sm text-gray-600 dark:text-gray-400">Slow</span>
                 <input
                   id="speech-rate"
-                  v-model="speechRate"
-                  @input="updateSpeechRate"
+                  :value="uiStore.speechSettings.rate"
+                  @input="updateSpeechSetting('rate', $event.target.value)"
                   type="range"
                   min="0.5"
                   max="2"
@@ -196,15 +196,101 @@
                 />
                 <span class="text-sm text-gray-600 dark:text-gray-400">Fast</span>
               </div>
+              <div class="text-center mt-2 text-sm text-gray-600 dark:text-gray-400">
+                {{ uiStore.speechSettings.rate }}x
+              </div>
             </div>
 
+            <!-- Speech Pitch -->
+            <div v-if="uiStore.speechEnabled" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <label for="speech-pitch" class="text-gray-700 dark:text-gray-300 font-medium block mb-2">
+                Speech Pitch
+              </label>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                Adjust the pitch of the voice
+              </p>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Low</span>
+                <input
+                  id="speech-pitch"
+                  :value="uiStore.speechSettings.pitch"
+                  @input="updateSpeechSetting('pitch', $event.target.value)"
+                  type="range"
+                  min="0"
+                  max="2"
+                  step="0.1"
+                  class="flex-1 mx-4 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-600"
+                />
+                <span class="text-sm text-gray-600 dark:text-gray-400">High</span>
+              </div>
+              <div class="text-center mt-2 text-sm text-gray-600 dark:text-gray-400">
+                {{ uiStore.speechSettings.pitch }}
+              </div>
+            </div>
+
+            <!-- Speech Volume -->
+            <div v-if="uiStore.speechEnabled" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <label for="speech-volume" class="text-gray-700 dark:text-gray-300 font-medium block mb-2">
+                Speech Volume
+              </label>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                Adjust the volume of speech
+              </p>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Quiet</span>
+                <input
+                  id="speech-volume"
+                  :value="uiStore.speechSettings.volume"
+                  @input="updateSpeechSetting('volume', $event.target.value)"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  class="flex-1 mx-4 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-600"
+                />
+                <span class="text-sm text-gray-600 dark:text-gray-400">Loud</span>
+              </div>
+              <div class="text-center mt-2 text-sm text-gray-600 dark:text-gray-400">
+                {{ Math.round(uiStore.speechSettings.volume * 100) }}%
+              </div>
+            </div>
+
+            <!-- Voice Selection -->
+            <div v-if="uiStore.speechEnabled" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <label for="speech-voice" class="text-gray-700 dark:text-gray-300 font-medium block mb-2">
+                Voice Selection
+              </label>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                Choose a voice for speech synthesis
+              </p>
+              <select
+                id="speech-voice"
+                @change="updateSpeechVoice($event.target.value)"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-300"
+              >
+                <option value="">Default Voice</option>
+                <option
+                  v-for="(voice, index) in uiStore.availableVoices"
+                  :key="index"
+                  :value="index"
+                  :selected="uiStore.speechSettings.voice === voice"
+                >
+                  {{ voice.name }} ({{ voice.lang }})
+                </option>
+              </select>
+            </div>
             <!-- Test Speech -->
             <div v-if="uiStore.speechEnabled" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <button
                 @click="testSpeech"
-                class="w-full bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                :class="[
+                  'w-full px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                  uiStore.isSpeaking 
+                    ? 'bg-error-600 text-white hover:bg-error-700' 
+                    : 'bg-primary-600 text-white hover:bg-primary-700'
+                ]"
               >
-                Test Speech
+                {{ uiStore.isSpeaking ? 'Stop Speech' : 'Test Speech' }}
               </button>
             </div>
           </div>
@@ -378,8 +464,6 @@ const emit = defineEmits(['close'])
 
 const uiStore = useUIStore()
 const modalRef = ref(null)
-const textSpacing = ref(1.5)
-const speechRate = ref(1)
 const enhancedFocus = ref(false)
 const reducedMotion = ref(false)
 
@@ -399,8 +483,13 @@ const updateTextSpacing = () => {
   localStorage.setItem('textSpacing', textSpacing.value.toString())
 }
 
-const updateSpeechRate = () => {
-  localStorage.setItem('speechRate', speechRate.value.toString())
+const updateSpeechSetting = (setting, value) => {
+  uiStore.updateSpeechSettings({ [setting]: parseFloat(value) })
+}
+
+const updateSpeechVoice = (voiceIndex) => {
+  const voice = voiceIndex ? uiStore.availableVoices[parseInt(voiceIndex)] : null
+  uiStore.updateSpeechSettings({ voice })
 }
 
 const toggleFocusIndicators = () => {
@@ -424,12 +513,8 @@ const toggleReducedMotion = () => {
 }
 
 const testSpeech = () => {
-  if (uiStore.speechEnabled && 'speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance('This is a test of the speech synthesis feature. The speech rate is currently set to ' + speechRate.value + '.')
-    utterance.rate = speechRate.value
-    utterance.pitch = 1
-    speechSynthesis.speak(utterance)
-  }
+  const testText = `This is a test of the speech synthesis feature. The speech rate is ${uiStore.speechSettings.rate}, pitch is ${uiStore.speechSettings.pitch}, and volume is ${Math.round(uiStore.speechSettings.volume * 100)} percent.`
+  uiStore.toggleSpeaking(testText)
 }
 
 const resetToDefaults = () => {
@@ -440,18 +525,21 @@ const resetToDefaults = () => {
   uiStore.speechEnabled = false
   
   // Reset local settings
-  textSpacing.value = 1.5
-  speechRate.value = 1
   enhancedFocus.value = false
   reducedMotion.value = false
   
   // Apply changes
-  updateTextSpacing()
   document.documentElement.classList.remove('enhanced-focus', 'reduced-motion')
   
+  // Reset speech settings
+  uiStore.updateSpeechSettings({
+    rate: 1,
+    pitch: 1,
+    volume: 1,
+    voice: null
+  })
+  
   // Clear localStorage
-  localStorage.removeItem('textSpacing')
-  localStorage.removeItem('speechRate')
   localStorage.removeItem('enhancedFocus')
   localStorage.removeItem('reducedMotion')
   
@@ -509,19 +597,8 @@ const focusModal = async () => {
 
 // Load saved settings
 const loadSettings = () => {
-  const savedTextSpacing = localStorage.getItem('textSpacing')
-  const savedSpeechRate = localStorage.getItem('speechRate')
   const savedEnhancedFocus = localStorage.getItem('enhancedFocus')
   const savedReducedMotion = localStorage.getItem('reducedMotion')
-  
-  if (savedTextSpacing) {
-    textSpacing.value = parseFloat(savedTextSpacing)
-    updateTextSpacing()
-  }
-  
-  if (savedSpeechRate) {
-    speechRate.value = parseFloat(savedSpeechRate)
-  }
   
   if (savedEnhancedFocus === 'true') {
     enhancedFocus.value = true
@@ -544,6 +621,13 @@ watch(() => props.isOpen, (newValue) => {
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
   loadSettings()
+  
+  // Load voices when they become available
+  if ('speechSynthesis' in window) {
+    speechSynthesis.onvoiceschanged = () => {
+      // Voices are now loaded
+    }
+  }
 })
 
 onUnmounted(() => {

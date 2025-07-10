@@ -106,10 +106,15 @@
                 
                 <button
                   @click="testSpeech"
-                  class="w-full bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                  :class="[
+                    'w-full px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                    uiStore.isSpeaking 
+                      ? 'bg-error-600 text-white hover:bg-error-700' 
+                      : 'bg-primary-600 text-white hover:bg-primary-700'
+                  ]"
                   :disabled="!uiStore.speechEnabled"
                 >
-                  Test Speech
+                  {{ uiStore.isSpeaking ? 'Stop Speech' : 'Test Speech' }}
                 </button>
               </div>
             </div>
@@ -169,6 +174,7 @@ import SkipLink from '../components/ui/SkipLink.vue'
 const uiStore = useUIStore()
 
 const testSpeech = () => {
-  uiStore.speak('This is a test of the speech synthesis feature. If you can hear this, the feature is working correctly.')
+  const testText = 'This is a test of the speech synthesis feature. If you can hear this, the feature is working correctly.'
+  uiStore.toggleSpeaking(testText)
 }
 </script>

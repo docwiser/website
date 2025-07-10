@@ -253,6 +253,9 @@ import {
 import { useAuthStore } from '../../stores/auth'
 import { useUIStore } from '../../stores/ui'
 import AccessibilityModal from '../ui/AccessibilityModal.vue'
+import GitHubIcon from '../../assets/icons/GitHubIcon.vue'
+import LinkedInIcon from '../../assets/icons/LinkedInIcon.vue'
+import TwitterIcon from '../../assets/icons/TwitterIcon.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()

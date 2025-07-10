@@ -25,7 +25,9 @@
               target="_blank"
               rel="noopener noreferrer"
             >
-              <component :is="social.icon" class="h-5 w-5" />
+              <GitHubIcon v-if="social.name === 'GitHub'" class="h-5 w-5" />
+              <LinkedInIcon v-if="social.name === 'LinkedIn'" class="h-5 w-5" />
+              <TwitterIcon v-if="social.name === 'Twitter'" class="h-5 w-5" />
             </a>
           </div>
         </div>
@@ -128,24 +130,24 @@
 
 <script setup>
 import { computed } from 'vue'
+import GitHubIcon from '../../assets/icons/GitHubIcon.vue'
+import LinkedInIcon from '../../assets/icons/LinkedInIcon.vue'
+import TwitterIcon from '../../assets/icons/TwitterIcon.vue'
 
 const currentYear = computed(() => new Date().getFullYear())
 
 const socialLinks = [
   {
     name: 'GitHub',
-    href: 'https://github.com/susantswain',
-    icon: 'GitHubIcon'
+    href: 'https://github.com/susantswain'
   },
   {
     name: 'LinkedIn',
-    href: 'https://linkedin.com/in/susantswain',
-    icon: 'LinkedInIcon'
+    href: 'https://linkedin.com/in/susantswain'
   },
   {
     name: 'Twitter',
-    href: 'https://twitter.com/susantswain',
-    icon: 'TwitterIcon'
+    href: 'https://twitter.com/susantswain'
   }
 ]
 

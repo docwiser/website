@@ -1,5 +1,6 @@
 <template>
   <div id="app" :class="[uiStore.theme, uiStore.fontSizeClass]">
+    <ProgressBar />
     <TheHeader />
     <router-view />
     <TheFooter />
@@ -15,6 +16,7 @@ import TheHeader from './components/layout/TheHeader.vue'
 import TheFooter from './components/layout/TheFooter.vue'
 import NotificationToast from './components/ui/NotificationToast.vue'
 
+import ProgressBar from './components/ui/ProgressBar.vue'
 const authStore = useAuthStore()
 const uiStore = useUIStore()
 

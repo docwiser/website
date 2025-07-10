@@ -36,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
         await fetchUserRole(firebaseUser.uid)
       } else {
         user.value = null
-        userRole.value = 'public'
+        userRole.value = 'subscriber'
         userPermissions.value = []
       }
       loading.value = false
@@ -48,26 +48,26 @@ export const useAuthStore = defineStore('auth', () => {
       const userDoc = await getDoc(doc(db, 'users', uid))
       if (userDoc.exists()) {
         const userData = userDoc.data()
-        userRole.value = userData.role || 'public'
+        userRole.value = userData.role || 'subscriber'
         userPermissions.value = userData.permissions || []
       } else {
         // Create default user document
         const defaultUserData = {
           email: user.value.email,
           displayName: user.value.displayName || '',
-          role: 'public',
+          role: 'subscriber',
           permissions: [],
           createdAt: new Date().toISOString(),
           lastLogin: new Date().toISOString()
         }
         
         await setDoc(doc(db, 'users', uid), defaultUserData)
-        userRole.value = 'public'
+        userRole.value = 'subscriber'
         userPermissions.value = []
       }
     } catch (err) {
       console.error('Error fetching user role:', err)
-      userRole.value = 'public'
+      userRole.value = 'subscriber'
       userPermissions.value = []
     }
   }
@@ -107,7 +107,7 @@ export const useAuthStore = defineStore('auth', () => {
       await setDoc(doc(db, 'users', newUser.uid), {
         email: newUser.email,
         displayName: displayName,
-        role: 'public',
+        role: 'subscriber',
         permissions: [],
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString()
@@ -150,7 +150,7 @@ export const useAuthStore = defineStore('auth', () => {
           await setDoc(doc(db, 'users', user.uid), {
             email: user.email,
             displayName: user.displayName || '',
-            role: 'public',
+            role: 'subscriber',
             permissions: [],
             createdAt: new Date().toISOString(),
             lastLogin: new Date().toISOString(),
@@ -176,7 +176,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await signOut(auth)
       user.value = null
-      userRole.value = 'public'
+      userRole.value = 'subscriber'
       userPermissions.value = []
       return true
     } catch (err) {

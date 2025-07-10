@@ -1,0 +1,27 @@
+{
+  "name": "Susant Swain - WordPress Developer & Accessibility Engineer",
+  "short_name": "Susant Swain",
+  "description": "WordPress Developer & Accessibility Engineer specializing in creating inclusive digital experiences for the visually impaired community.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr"
+}

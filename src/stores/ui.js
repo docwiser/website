@@ -9,6 +9,18 @@ export const useUIStore = defineStore('ui', () => {
   const sidebarOpen = ref(false)
   const loading = ref(false)
   const notifications = ref([])
+  
+  // Advanced speech settings
+  const speechSettings = ref({
+    rate: 1,
+    pitch: 1,
+    volume: 1,
+    voice: null,
+    autoStop: true
+  })
+  
+  const isSpeaking = ref(false)
+  const currentUtterance = ref(null)
 
   const theme = computed(() => darkMode.value ? 'dark' : 'light')
   const fontSizeClass = computed(() => {
@@ -20,12 +32,20 @@ export const useUIStore = defineStore('ui', () => {
     }
   })
 
+  const availableVoices = computed(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      return speechSynthesis.getVoices()
+    }
+    return []
+  })
+
   const initializeTheme = () => {
     // Get saved preferences from localStorage
     const savedDarkMode = localStorage.getItem('darkMode')
     const savedHighContrast = localStorage.getItem('highContrast')
     const savedFontSize = localStorage.getItem('fontSize')
     const savedSpeechEnabled = localStorage.getItem('speechEnabled')
+    const savedSpeechSettings = localStorage.getItem('speechSettings')
 
     if (savedDarkMode) {
       darkMode.value = JSON.parse(savedDarkMode)
@@ -44,6 +64,10 @@ export const useUIStore = defineStore('ui', () => {
 
     if (savedSpeechEnabled) {
       speechEnabled.value = JSON.parse(savedSpeechEnabled)
+    }
+
+    if (savedSpeechSettings) {
+      speechSettings.value = { ...speechSettings.value, ...JSON.parse(savedSpeechSettings) }
     }
 
     updateTheme()
@@ -70,6 +94,15 @@ export const useUIStore = defineStore('ui', () => {
   const toggleSpeech = () => {
     speechEnabled.value = !speechEnabled.value
     localStorage.setItem('speechEnabled', JSON.stringify(speechEnabled.value))
+    
+    if (!speechEnabled.value && isSpeaking.value) {
+      stopSpeaking()
+    }
+  }
+
+  const updateSpeechSettings = (newSettings) => {
+    speechSettings.value = { ...speechSettings.value, ...newSettings }
+    localStorage.setItem('speechSettings', JSON.stringify(speechSettings.value))
   }
 
   const updateTheme = () => {
@@ -117,17 +150,54 @@ export const useUIStore = defineStore('ui', () => {
   }
 
   const speak = (text) => {
-    if (speechEnabled.value && 'speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.rate = 0.8
-      utterance.pitch = 1
-      speechSynthesis.speak(utterance)
+    if (!speechEnabled.value || !('speechSynthesis' in window)) return
+
+    // Stop current speech if speaking
+    if (isSpeaking.value) {
+      stopSpeaking()
+      return
     }
+
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.rate = speechSettings.value.rate
+    utterance.pitch = speechSettings.value.pitch
+    utterance.volume = speechSettings.value.volume
+    
+    if (speechSettings.value.voice) {
+      utterance.voice = speechSettings.value.voice
+    }
+
+    utterance.onstart = () => {
+      isSpeaking.value = true
+    }
+
+    utterance.onend = () => {
+      isSpeaking.value = false
+      currentUtterance.value = null
+    }
+
+    utterance.onerror = () => {
+      isSpeaking.value = false
+      currentUtterance.value = null
+    }
+
+    currentUtterance.value = utterance
+    speechSynthesis.speak(utterance)
   }
 
   const stopSpeaking = () => {
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel()
+      isSpeaking.value = false
+      currentUtterance.value = null
+    }
+  }
+
+  const toggleSpeaking = (text) => {
+    if (isSpeaking.value) {
+      stopSpeaking()
+    } else {
+      speak(text)
     }
   }
 
@@ -136,6 +206,9 @@ export const useUIStore = defineStore('ui', () => {
     highContrast,
     fontSize,
     speechEnabled,
+    speechSettings,
+    isSpeaking,
+    availableVoices,
     sidebarOpen,
     loading,
     notifications,
@@ -146,10 +219,12 @@ export const useUIStore = defineStore('ui', () => {
     toggleHighContrast,
     setFontSize,
     toggleSpeech,
+    updateSpeechSettings,
     toggleSidebar,
     addNotification,
     removeNotification,
     speak,
-    stopSpeaking
+    stopSpeaking,
+    toggleSpeaking
   }
 })

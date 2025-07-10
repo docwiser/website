@@ -58,10 +58,10 @@
             class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
           >
             <div v-if="project.image" class="h-48 bg-gray-200 dark:bg-gray-700 overflow-hidden">
-              <img
+              <ImageLazyLoad
                 :src="project.image"
                 :alt="project.title"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                image-class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
             <div v-else class="h-48 bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center">
@@ -141,6 +141,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useContentStore } from '../stores/content'
 import SkipLink from '../components/ui/SkipLink.vue'
 import LoadingSpinner from '../components/ui/LoadingSpinner.vue'
+import ImageLazyLoad from '../components/ui/ImageLazyLoad.vue'
 
 const contentStore = useContentStore()
 const selectedTag = ref('')

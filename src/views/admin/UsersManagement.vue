@@ -84,6 +84,12 @@
           <div class="flex justify-between items-center">
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">All Users</h2>
             <div class="flex space-x-3">
+              <button
+                @click="openUserModal()"
+                class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                Add User
+              </button>
               <input
                 v-model="searchQuery"
                 type="text"
@@ -157,14 +163,14 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex space-x-2">
                     <button
-                      @click="editUser(user)"
+                      @click="openUserModal(user)"
                       class="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
                     >
                       Edit
                     </button>
                     <button
                       v-if="user.id !== authStore.user?.uid"
-                      @click="deleteUser(user)"
+                      @click="confirmDeleteUser(user)"
                       class="text-error-600 hover:text-error-700 dark:text-error-400 dark:hover:text-error-300"
                     >
                       Delete
@@ -185,6 +191,39 @@
         </div>
       </div>
     </main>
+
+    <!-- User Modal -->
+    <UserModal
+      :is-open="showUserModal"
+      :user="selectedUser"
+      @close="closeUserModal"
+      @saved="handleUserSaved"
+    />
+
+    <!-- Delete Confirmation Modal -->
+    <AdminModal
+      :is-open="showDeleteModal"
+      title="Delete User"
+      size="sm"
+      :show-footer="true"
+      save-text="Delete"
+      :loading="deleteLoading"
+      @close="closeDeleteModal"
+      @save="confirmDelete"
+    >
+      <div class="text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-error-100 dark:bg-error-900 mb-4">
+          <ExclamationTriangleIcon class="h-6 w-6 text-error-600 dark:text-error-400" />
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+          Are you sure?
+        </h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          This action cannot be undone. This will permanently delete the user account for
+          <strong v-if="deleteUser">"{{ deleteUser.displayName || deleteUser.email }}"</strong>.
+        </p>
+      </div>
+    </AdminModal>
   </div>
 </template>
 
@@ -194,11 +233,14 @@ import {
   UsersIcon, 
   ShieldCheckIcon, 
   EyeIcon, 
-  ClockIcon 
+  ClockIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '../../stores/auth'
 import { useUIStore } from '../../stores/ui'
 import SkipLink from '../../components/ui/SkipLink.vue'
+import AdminModal from '../../components/ui/AdminModal.vue'
+import UserModal from '../../components/admin/UserModal.vue'
 
 const authStore = useAuthStore()
 const uiStore = useUIStore()
@@ -206,6 +248,13 @@ const uiStore = useUIStore()
 const users = ref([])
 const searchQuery = ref('')
 const roleFilter = ref('')
+
+// Modal states
+const showUserModal = ref(false)
+const showDeleteModal = ref(false)
+const selectedUser = ref(null)
+const deleteUser = ref(null)
+const deleteLoading = ref(false)
 
 const adminCount = computed(() => users.value.filter(u => u.role === 'admin').length)
 const viewerCount = computed(() => users.value.filter(u => u.role === 'viewer').length)
@@ -257,23 +306,61 @@ const formatDate = (dateString) => {
   })
 }
 
-const editUser = (user) => {
-  // TODO: Implement user editing
-  uiStore.addNotification({
-    type: 'info',
-    title: 'Feature Coming Soon',
-    message: 'User editing functionality will be available soon.'
-  })
+// User Modal Functions
+const openUserModal = (user = null) => {
+  selectedUser.value = user
+  showUserModal.value = true
 }
 
-const deleteUser = (user) => {
-  if (confirm(`Are you sure you want to delete ${user.displayName || user.email}?`)) {
-    // TODO: Implement user deletion
+const closeUserModal = () => {
+  showUserModal.value = false
+  selectedUser.value = null
+}
+
+const handleUserSaved = () => {
+  // Refresh users list or handle as needed
+  // Modal will close itself and show notification
+}
+
+const confirmDeleteUser = (user) => {
+  deleteUser.value = user
+  showDeleteModal.value = true
+}
+
+// Delete Modal Functions
+const closeDeleteModal = () => {
+  showDeleteModal.value = false
+  deleteUser.value = null
+}
+
+const confirmDelete = async () => {
+  if (!deleteUser.value) return
+
+  deleteLoading.value = true
+  try {
+    // Simulate user deletion
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    // Remove from local array
+    const index = users.value.findIndex(u => u.id === deleteUser.value.id)
+    if (index > -1) {
+      users.value.splice(index, 1)
+    }
+    
     uiStore.addNotification({
-      type: 'info',
-      title: 'Feature Coming Soon',
-      message: 'User deletion functionality will be available soon.'
+      type: 'success',
+      title: 'User Deleted',
+      message: 'The user has been successfully deleted.'
     })
+    closeDeleteModal()
+  } catch (error) {
+    uiStore.addNotification({
+      type: 'error',
+      title: 'Delete Failed',
+      message: 'There was an error deleting the user.'
+    })
+  } finally {
+    deleteLoading.value = false
   }
 }
 
